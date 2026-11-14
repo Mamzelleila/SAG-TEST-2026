@@ -41,7 +41,7 @@ self.addEventListener('activate', event => {
 
     for (const key of keys) {
       if (
-        key.startsWith('sag-production-shell-') &&
+        key.startsWith('sag-test-shell-') &&
         key !== CACHE
       ) {
         await caches.delete(key);
