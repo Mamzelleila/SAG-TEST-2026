@@ -1939,17 +1939,32 @@ return title("Récapitulatif du bon")+`<p class="hint">Récapitulatif des inform
 <div class="pdfsection"><b>INFORMATIONS COMPLÉMENTAIRES</b><div>Note : ${esc(b.note||"—")}</div><div>Contact : ${esc(b.contact||"—")}</div></div>
 <div class="pdfsection"><b>DURÉE DE TRAVAIL</b>${Object.entries(b.durations||{}).map(([k,v])=>`<div>${esc(k)} : <b>${esc(v)}</b></div>`).join("")}${b.overtime?`<div>Heures supplémentaires : <b>${esc(b.hours)} h</b></div>`:""}</div>
 <div class="pdfsection"><b>PRESTATIONS COMPLÉMENTAIRES</b>${(b.services||[]).map(x=>`<div>☑ ${esc(x)}</div>`).join("")}${b.other?`<div>☑ Autre : ${esc(b.other)}</div>`:""}</div>
-<div class="pdfsection"><b>SIGNATURE CLIENT</b><div class="pdfsig">${b.clientSignature?`<img src="${esc(b.clientSignature)}" alt="Signature client" style="max-width:100%;max-height:78px">`:`Signature manuscrite client`}</div><div>${esc(b.clientName||"")} — ${esc(b.clientRole||"")}</div>
-${[b.clientEmail, b.clientEmail2, b.clientEmail3]
-  .map(email => String(email || "").trim())
-  .filter(email => email !== "")
-  .filter((email, index, emails) => emails.indexOf(email) === index)
-  .map(email => `<div>E-mail : ${esc(email)}</div>`)
-  .join("")}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:start">
+  <div class="pdfsection" style="min-width:0">
+    <b>SIGNATURE CLIENT</b>
+    <div class="pdfsig">
+      ${b.clientSignature
+        ? `<img src="${esc(b.clientSignature)}" alt="Signature client" style="max-width:100%;max-height:78px">`
+        : `Signature manuscrite client`}
+    </div>
+    <div>${esc(b.clientName||"")} — ${esc(b.clientRole||"")}</div>
+    ${[b.clientEmail,b.clientEmail2,b.clientEmail3]
+      .map(email=>String(email||"").trim())
+      .filter(email=>email!=="")
+      .filter((email,index,emails)=>emails.indexOf(email)===index)
+      .map(email=>`<div style="overflow-wrap:anywhere">E-mail : ${esc(email)}</div>`)
+      .join("")}
+  </div>
+  <div class="pdfsection" style="min-width:0">
+    <b>SIGNATURE OPÉRATEUR</b>
+    <div>${esc(b.operator)} — ${esc(b.machine)} 🔒</div>
+    <div class="pdfsig">Signature opérateur pré-enregistrée 🔒</div>
+  </div>
 </div>
-<div class="pdfsection"><b>OPÉRATEUR</b><div>${esc(b.operator)} — ${esc(b.machine)} 🔒</div><div class="pdfsig">Signature opérateur pré-enregistrée 🔒</div></div>
 </div></div>
 <div class="pdfactions">
+
 ${b.mailStatus==='SKIPPED_TEST'?'<p class="hint">Bon de test : aucun e-mail envoyé.</p>':''}
 ${!b.horsLigne && b.fileId ? `<button class="primary" onclick="downloadPdf('${b.id}')">Télécharger le PDF définitif</button>` : `<p class="hint">Le PDF sera disponible après confirmation de l’enregistrement.</p>`}
 ${!b.horsLigne && currentUser.role==='admin' && b.status!=='Annulé' && ['UNCERTAIN','SENDING','PENDING'].includes(b.mailStatus) ? `<button class="ghost" onclick="resendMail('${b.id}')">Vérifier / renvoyer le mail</button>` : ''}
