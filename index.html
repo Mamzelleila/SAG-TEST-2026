@@ -1862,12 +1862,17 @@ function setupSignatureCanvas(id) {
   let activePointer = null;
 
   function pos(e) {
-    const r = c.getBoundingClientRect();
-    return [
-      (e.clientX - r.left) * (c.width / ratio / r.width),
-      (e.clientY - r.top) * (c.height / ratio / r.height)
-    ];
-  }
+  const r = c.getBoundingClientRect();
+  const marge = ctx.lineWidth / 2 + 1;
+
+  const x = (e.clientX - r.left) * (c.width / ratio / r.width);
+  const y = (e.clientY - r.top) * (c.height / ratio / r.height);
+
+  return [
+    Math.max(marge, Math.min(r.width - marge, x)),
+    Math.max(marge, Math.min(r.height - marge, y))
+  ];
+}
 
   c.onpointerdown = function(e) {
     if (down) return;
